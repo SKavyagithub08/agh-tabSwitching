@@ -23,16 +23,17 @@ const TestPage = () => {
     };
   }, []);
 
-  // TODO: Hook up backend
   const sendTabSwitchToServer = async (count) => {
     try {
-      // Replace with actual POST call to backend
-      console.log("Sending to backend:", count);
-      // await fetch("http://localhost:5000/api/tab-switch", {
-      //   method: "POST",
-      //   headers: { "Content-Type": "application/json" },
-      //   body: JSON.stringify({ userId: "user123", count }),
-      // });
+      await fetch("http://localhost:5000/api/tab-switch", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          userId: "user123",     // Replace with real user ID if you have auth
+          testId: "test001",     // Optional: could be dynamic
+          switchCount: count
+        }),
+      });
     } catch (error) {
       console.error("Error sending tab switch count:", error);
     }
