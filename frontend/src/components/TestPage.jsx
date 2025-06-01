@@ -8,6 +8,7 @@ const TestPage = () => {
   const [timeLeft, setTimeLeft] = useState(30 * 60); // 30 minutes in seconds
   const [code, setCode] = useState("// Write your solution here");
   const recentlySwitched = useRef(false);
+  const autoSubmitted = useRef(false);
 
   //this is login state
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -121,6 +122,8 @@ const TestPage = () => {
   };
 
   const handleAutoSubmit = () => {
+    if (autoSubmitted.current) return;
+    autoSubmitted.current = true;
     toast.error("🚫 Test auto-submitted due to tab switching or timeout!");
     console.log("Auto-submitting test...");
   };

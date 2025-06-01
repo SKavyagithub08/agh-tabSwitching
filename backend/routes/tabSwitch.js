@@ -3,7 +3,7 @@ const router = express.Router();
 const TabSwitch = require("../models/TabSwitch");
 
 router.post("/", async (req, res) => {
-  console.log("Received tab switch:", req.body); 
+  console.log("Received tab switch:", req.body);
   const { username, testId, switchCount } = req.body;
   try {
     await TabSwitch.findOneAndUpdate(

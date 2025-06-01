@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 
 const tabSwitchSchema = new mongoose.Schema({
-   username: String, 
+   username: String,
   testId: String,
   switchCount: Number,
   timestamp: { type: Date, default: Date.now }
