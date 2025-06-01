@@ -75,11 +75,17 @@ const TestPage = () => {
 
   const showWarningToast = (count) => {
     if (count === 1) {
-      toast.warn("⚠️ Warning: Please stay on the test tab.");
+      if (!toast.isActive('tab-warning-1')) {
+        toast.warn("⚠️ Warning: Please stay on the test tab.", { toastId: 'tab-warning-1' });
+      }
     } else if (count === 3) {
-      toast.error("⚠️ You’ve switched tabs 3 times! One more and you’ll be auto-submitted.");
+      if (!toast.isActive('tab-warning-3')) {
+        toast.error("⚠️ You’ve switched tabs 3 times! One more and you’ll be auto-submitted.", { toastId: 'tab-warning-3' });
+      }
     } else if (count === 4) {
-      toast.error("🚨 Final warning! Next tab switch = auto-submit.");
+      if (!toast.isActive('tab-warning-4')) {
+        toast.error("🚨 Final warning! Next tab switch = auto-submit.", { toastId: 'tab-warning-4' });
+      }
     }
   };
 
