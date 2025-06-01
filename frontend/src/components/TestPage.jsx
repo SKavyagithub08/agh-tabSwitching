@@ -9,13 +9,13 @@ const TestPage = () => {
   const [code, setCode] = useState("// Write your solution here");
   const recentlySwitched = useRef(false);
 
-  // Add login state
+  //this is login state
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [loginForm, setLoginForm] = useState({ username: "", password: "" });
   const [loginError, setLoginError] = useState("");
   const [testId, setTestId] = useState("");
 
-  // 👇 Define questions directly here
+  // test questions 
   const questions = [
     {
       title: "Fibonacci Sequence",
@@ -31,7 +31,7 @@ const TestPage = () => {
     }
   ];
 
-  const currentQuestionIndex = 0; // Static (can be made dynamic later)
+  const currentQuestionIndex = 0; // for now its static
   const currentQuestion = questions[currentQuestionIndex];
 
   useEffect(() => {
@@ -59,7 +59,7 @@ const TestPage = () => {
 
     document.addEventListener("visibilitychange", handleVisibilityChange);
     return () => document.removeEventListener("visibilitychange", handleVisibilityChange);
-  }, [loginForm.username, testId]); // Add dependencies
+  }, [loginForm.username, testId]);
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -77,7 +77,7 @@ const TestPage = () => {
   const showWarningToast = (count) => {
     if (count === 1) {
       if (!toast.isActive('tab-warning-1')) {
-        toast.warn("⚠️ Warning: Please stay on the test tab.", { toastId: 'tab-warning-1' });
+        toast.warn("Warning: Please stay on the test tab.", { toastId: 'tab-warning-1' });
       }
     } else if (count === 3) {
       if (!toast.isActive('tab-warning-3')) {
@@ -107,7 +107,7 @@ const TestPage = () => {
     }
   };
 
-  // Simple login handler (no backend, just demo)
+  // Simple login handler
   const handleLogin = (e) => {
     e.preventDefault();
     if (loginForm.username.trim() && loginForm.password.trim()) {
@@ -123,7 +123,6 @@ const TestPage = () => {
   const handleAutoSubmit = () => {
     toast.error("🚫 Test auto-submitted due to tab switching or timeout!");
     console.log("Auto-submitting test...");
-    // TODO: Send code to backend
   };
 
   const formatTime = (seconds) => {
@@ -132,7 +131,7 @@ const TestPage = () => {
     return `${mins}:${secs}`;
   };
 
-  // Show login page if not logged in
+  
   if (!isLoggedIn) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-100">
