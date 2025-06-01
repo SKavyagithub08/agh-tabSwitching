@@ -10,12 +10,13 @@ const TestPage = () => {
   const recentlySwitched = useRef(false);
   const autoSubmitted = useRef(false);
 
-  // Add login state
+  //this is login state
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [loginForm, setLoginForm] = useState({ username: "", password: "" });
   const [loginError, setLoginError] = useState("");
+  const [testId, setTestId] = useState("");
 
-  // 👇 Define questions directly here
+  // test questions 
   const questions = [
     {
       title: "Fibonacci Sequence",
@@ -31,7 +32,7 @@ const TestPage = () => {
     }
   ];
 
-  const currentQuestionIndex = 0; // Static (can be made dynamic later)
+  const currentQuestionIndex = 0; // for now its static
   const currentQuestion = questions[currentQuestionIndex];
 
   useEffect(() => {
@@ -46,6 +47,9 @@ const TestPage = () => {
           if ([1, 3, 4].includes(newCount)) {
             showWarningToast(newCount);
           }
+          sendTabSwitchToServer(loginForm.username, newCount, testId);
+          showWarningToast(newCount);
+
           if (newCount >= 5) {
             handleAutoSubmit();
           }
@@ -60,7 +64,7 @@ const TestPage = () => {
 
     document.addEventListener("visibilitychange", handleVisibilityChange);
     return () => document.removeEventListener("visibilitychange", handleVisibilityChange);
-  }, []);
+  }, [loginForm.username, testId]);
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -78,7 +82,7 @@ const TestPage = () => {
   const showWarningToast = (count) => {
     if (count === 1) {
       if (!toast.isActive('tab-warning-1')) {
-        toast.warn("⚠️ Warning: Please stay on the test tab.", { toastId: 'tab-warning-1' });
+        toast.warn("Warning: Please stay on the test tab.", { toastId: 'tab-warning-1' });
       }
     } else if (count === 3) {
       if (!toast.isActive('tab-warning-3')) {
@@ -91,14 +95,15 @@ const TestPage = () => {
     }
   };
 
-  const sendTabSwitchToServer = async (count) => {
+  const sendTabSwitchToServer = async (username, count, testId) => {
+    if (!username) return; 
     try {
-      await fetch("http://localhost:5000/api/tab-switch", {
+      await fetch("http://localhost:3000/api/tab-switch", { 
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          userId: "user123",
-          testId: "test001",
+          username,
+          testId,
           switchCount: count
         }),
       });
@@ -107,13 +112,14 @@ const TestPage = () => {
     }
   };
 
-  // Simple login handler (no backend, just demo)
+  // Simple login handler
   const handleLogin = (e) => {
     e.preventDefault();
-    // For demo, accept any non-empty username/password
     if (loginForm.username.trim() && loginForm.password.trim()) {
       setIsLoggedIn(true);
       setLoginError("");
+      // Generate unique testId for this user session
+      setTestId(`${loginForm.username}_${Date.now()}`);
     } else {
       setLoginError("Please enter both username and password.");
     }
@@ -124,7 +130,6 @@ const TestPage = () => {
     autoSubmitted.current = true;
     toast.error("🚫 Test auto-submitted due to tab switching or timeout!");
     console.log("Auto-submitting test...");
-    // TODO: Send code to backend
   };
 
   const formatTime = (seconds) => {
@@ -133,7 +138,7 @@ const TestPage = () => {
     return `${mins}:${secs}`;
   };
 
-  // Show login page if not logged in
+  
   if (!isLoggedIn) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-100">
@@ -213,13 +218,13 @@ const TestPage = () => {
             <div className={`absolute bottom-4 right-4 text-sm font-semibold px-4 py-2 rounded-xl shadow
               ${tabSwitchCount >= 4 ? 'bg-red-600 text-white animate-pulse' :
                 tabSwitchCount >= 2 ? 'bg-yellow-400 text-black animate-pulse' :
-                'bg-orange-300 text-black animate-pulse'}
+                  'bg-orange-300 text-black animate-pulse'}
             `}>
               {tabSwitchCount >= 4
                 ? "⚠️ Final Warning! You may be disqualified."
                 : tabSwitchCount >= 2
-                ? "⚠️ Focus! Further tab switches may auto-submit."
-                : "⚠️ Warning: Stay on this tab!"}
+                  ? "⚠️ Focus! Further tab switches may auto-submit."
+                  : "⚠️ Warning: Stay on this tab!"}
             </div>
           )}
         </div>

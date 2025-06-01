@@ -1,11 +1,11 @@
 const mongoose = require("mongoose");
 
 const tabSwitchSchema = new mongoose.Schema({
-  userId: String,
+   username: String, // can be used as username
+  // username: String, // (optional) add this if you want a separate field
   testId: String,
   switchCount: Number,
   timestamp: { type: Date, default: Date.now }
 });
 
 module.exports = mongoose.model("TabSwitch", tabSwitchSchema);
-// the number of times a user switches tabs during session.
