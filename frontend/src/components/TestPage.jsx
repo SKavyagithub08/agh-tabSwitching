@@ -13,6 +13,7 @@ const TestPage = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [loginForm, setLoginForm] = useState({ username: "", password: "" });
   const [loginError, setLoginError] = useState("");
+  const [testId, setTestId] = useState("");
 
   // 👇 Define questions directly here
   const questions = [
@@ -40,7 +41,7 @@ const TestPage = () => {
 
         setTabSwitchCount(prev => {
           const newCount = prev + 1;
-          sendTabSwitchToServer(newCount);
+          sendTabSwitchToServer(loginForm.username, newCount, testId);
           showWarningToast(newCount);
 
           if (newCount >= 5) {
@@ -58,7 +59,7 @@ const TestPage = () => {
 
     document.addEventListener("visibilitychange", handleVisibilityChange);
     return () => document.removeEventListener("visibilitychange", handleVisibilityChange);
-  }, []);
+  }, [loginForm.username, testId]); // Add dependencies
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -83,14 +84,15 @@ const TestPage = () => {
     }
   };
 
-  const sendTabSwitchToServer = async (count) => {
+  const sendTabSwitchToServer = async (username, count, testId) => {
+    if (!username) return; 
     try {
-      await fetch("http://localhost:5000/api/tab-switch", {
+      await fetch("http://localhost:3000/api/tab-switch", { 
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          userId: "user123",
-          testId: "test001",
+          username,
+          testId,
           switchCount: count
         }),
       });
@@ -102,10 +104,11 @@ const TestPage = () => {
   // Simple login handler (no backend, just demo)
   const handleLogin = (e) => {
     e.preventDefault();
-    // For demo, accept any non-empty username/password
     if (loginForm.username.trim() && loginForm.password.trim()) {
       setIsLoggedIn(true);
       setLoginError("");
+      // Generate unique testId for this user session
+      setTestId(`${loginForm.username}_${Date.now()}`);
     } else {
       setLoginError("Please enter both username and password.");
     }
@@ -203,13 +206,13 @@ const TestPage = () => {
             <div className={`absolute bottom-4 right-4 text-sm font-semibold px-4 py-2 rounded-xl shadow
               ${tabSwitchCount >= 4 ? 'bg-red-600 text-white animate-pulse' :
                 tabSwitchCount >= 2 ? 'bg-yellow-400 text-black animate-pulse' :
-                'bg-orange-300 text-black animate-pulse'}
+                  'bg-orange-300 text-black animate-pulse'}
             `}>
               {tabSwitchCount >= 4
                 ? "⚠️ Final Warning! You may be disqualified."
                 : tabSwitchCount >= 2
-                ? "⚠️ Focus! Further tab switches may auto-submit."
-                : "⚠️ Warning: Stay on this tab!"}
+                  ? "⚠️ Focus! Further tab switches may auto-submit."
+                  : "⚠️ Warning: Stay on this tab!"}
             </div>
           )}
         </div>
