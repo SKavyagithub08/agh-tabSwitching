@@ -9,6 +9,11 @@ const TestPage = () => {
   const [code, setCode] = useState("// Write your solution here");
   const recentlySwitched = useRef(false);
 
+  // Add login state
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [loginForm, setLoginForm] = useState({ username: "", password: "" });
+  const [loginError, setLoginError] = useState("");
+
   // 👇 Define questions directly here
   const questions = [
     {
@@ -94,6 +99,18 @@ const TestPage = () => {
     }
   };
 
+  // Simple login handler (no backend, just demo)
+  const handleLogin = (e) => {
+    e.preventDefault();
+    // For demo, accept any non-empty username/password
+    if (loginForm.username.trim() && loginForm.password.trim()) {
+      setIsLoggedIn(true);
+      setLoginError("");
+    } else {
+      setLoginError("Please enter both username and password.");
+    }
+  };
+
   const handleAutoSubmit = () => {
     toast.error("🚫 Test auto-submitted due to tab switching or timeout!");
     console.log("Auto-submitting test...");
@@ -105,6 +122,42 @@ const TestPage = () => {
     const secs = String(seconds % 60).padStart(2, '0');
     return `${mins}:${secs}`;
   };
+
+  // Show login page if not logged in
+  if (!isLoggedIn) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-100">
+        <form
+          className="bg-white p-8 rounded-xl shadow-md w-full max-w-sm flex flex-col gap-4"
+          onSubmit={handleLogin}
+        >
+          <h2 className="text-2xl font-bold text-blue-600 mb-2">Login to Start Test</h2>
+          <input
+            type="text"
+            placeholder="Username"
+            className="border rounded px-3 py-2"
+            value={loginForm.username}
+            onChange={e => setLoginForm({ ...loginForm, username: e.target.value })}
+            autoFocus
+          />
+          <input
+            type="password"
+            placeholder="Password"
+            className="border rounded px-3 py-2"
+            value={loginForm.password}
+            onChange={e => setLoginForm({ ...loginForm, password: e.target.value })}
+          />
+          {loginError && <div className="text-red-600 text-sm">{loginError}</div>}
+          <button
+            type="submit"
+            className="bg-blue-600 text-white rounded px-4 py-2 font-semibold hover:bg-blue-700"
+          >
+            Login
+          </button>
+        </form>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen flex flex-col bg-gray-100">
