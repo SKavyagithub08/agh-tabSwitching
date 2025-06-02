@@ -2,13 +2,16 @@ import React, { useEffect, useState, useRef } from "react";
 import Editor from "@monaco-editor/react";
 import { ToastContainer, toast } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
+import { useNavigate } from "react-router-dom";
+
 
 const TestPage = () => {
   const [tabSwitchCount, setTabSwitchCount] = useState(0);
-  const [timeLeft, setTimeLeft] = useState(30 * 60); // 30 minutes in seconds
+  const [timeLeft, setTimeLeft] = useState(30 * 60); 
   const [code, setCode] = useState("// Write your solution here");
   const recentlySwitched = useRef(false);
   const autoSubmitted = useRef(false);
+  const navigate = useNavigate();
 
   //this is login state
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -82,11 +85,11 @@ const TestPage = () => {
       }
     } else if (count === 3) {
       if (!toast.isActive('tab-warning-3')) {
-        toast.error("⚠️ You’ve switched tabs 3 times! One more and you’ll be auto-submitted.", { toastId: 'tab-warning-3' });
+        toast.error("You’ve switched tabs 3 times! One more and you’ll be auto-submitted.", { toastId: 'tab-warning-3' });
       }
     } else if (count === 4) {
       if (!toast.isActive('tab-warning-4')) {
-        toast.error("🚨 Final warning! Next tab switch = auto-submit.", { toastId: 'tab-warning-4' });
+        toast.error("Final warning! Next tab switch = auto-submit.", { toastId: 'tab-warning-4' });
       }
     }
   };
@@ -122,11 +125,17 @@ const TestPage = () => {
   };
 
   const handleAutoSubmit = () => {
-    if (autoSubmitted.current) return;
-    autoSubmitted.current = true;
-    toast.error("🚫 Test auto-submitted due to tab switching or timeout!");
-    console.log("Auto-submitting test...");
-  };
+  if (autoSubmitted.current) return;
+  autoSubmitted.current = true;
+
+  toast.error("Test auto-submitted due to tab switching or timeout!");
+  console.log("Auto-submitting test...");
+
+  setTimeout(() => {
+    navigate("/disconnected");
+  }, 2000); // Give toast a moment to show
+};
+
 
   const formatTime = (seconds) => {
     const mins = String(Math.floor(seconds / 60)).padStart(2, '0');
@@ -136,39 +145,60 @@ const TestPage = () => {
 
   
   if (!isLoggedIn) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-100">
-        <form
-          className="bg-white p-8 rounded-xl shadow-md w-full max-w-sm flex flex-col gap-4"
-          onSubmit={handleLogin}
-        >
-          <h2 className="text-2xl font-bold text-blue-600 mb-2">Login to Start Test</h2>
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
+      <form
+        className="w-full max-w-sm bg-white rounded-xl shadow-md border border-gray-200 p-8"
+        onSubmit={handleLogin}
+      >
+        <h2 className="text-2xl font-semibold text-gray-800 mb-6 text-center">
+          Login to Start Test
+        </h2>
+
+        <div className="mb-4">
+          <label className="block text-sm text-gray-600 mb-1" htmlFor="username">
+            Username
+          </label>
           <input
+            id="username"
             type="text"
-            placeholder="Username"
-            className="border rounded px-3 py-2"
+            placeholder="Enter your username"
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
             value={loginForm.username}
             onChange={e => setLoginForm({ ...loginForm, username: e.target.value })}
             autoFocus
           />
+        </div>
+
+        <div className="mb-4">
+          <label className="block text-sm text-gray-600 mb-1" htmlFor="password">
+            Password
+          </label>
           <input
+            id="password"
             type="password"
-            placeholder="Password"
-            className="border rounded px-3 py-2"
+            placeholder="Enter your password"
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
             value={loginForm.password}
             onChange={e => setLoginForm({ ...loginForm, password: e.target.value })}
           />
-          {loginError && <div className="text-red-600 text-sm">{loginError}</div>}
-          <button
-            type="submit"
-            className="bg-blue-600 text-white rounded px-4 py-2 font-semibold hover:bg-blue-700"
-          >
-            Login
-          </button>
-        </form>
-      </div>
-    );
-  }
+        </div>
+
+        {loginError && (
+          <div className="text-red-600 text-sm mb-4">{loginError}</div>
+        )}
+
+        <button
+          type="submit"
+          className="w-full py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition text-sm"
+        >
+          Login
+        </button>
+      </form>
+    </div>
+  );
+}
+
 
   return (
     <div className="min-h-screen flex flex-col bg-gray-100">
