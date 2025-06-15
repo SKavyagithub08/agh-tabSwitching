@@ -1,7 +1,6 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import TestPage from "./components/TestPage";
-import DisconnectPage from "./components/DisconnectPage";
-import './index.css'
+import TestPage from "./components/TestPageComponent/TestPage.jsx";
+import DisconnectPage from "./components/DisconnectComponent/DisconnectPage.jsx";
 
 function App() {
   
